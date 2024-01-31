@@ -6,9 +6,7 @@ import java.util.List;
 public class Client {
     private String name;
     private Count count;
-
-
-    private List <String> checks = new ArrayList<>();
+    private List <String> bills = new ArrayList<>();
 
     public Client(String name, Count count) {
         this.name = name;
@@ -27,11 +25,11 @@ public class Client {
         return name;
     }
 
-    public List<String> getChecks() {
-        return checks;
+    public List<String> getBills() {
+        return bills;
     }
 
     public void addCheck (String check){
-        checks.add(check);
+        bills.add(check);
     }
 }

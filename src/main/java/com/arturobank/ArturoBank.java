@@ -6,26 +6,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ArturoBank {
-    List<Client> clients = new ArrayList<>();
+    private List<Client> clients = new ArrayList<>();
 
-    public void sentToClient(Client Sender, Client Recipient, int sum) {
-        int totalSender = Sender.getCount().getTotal();
-        if (totalSender >= sum) {
-            int temp1 = totalSender - sum;
-            Sender.getCount().setTotal(temp1);
-            int temp2 = Recipient.getCount().getTotal() + sum;
-            Recipient.getCount().setTotal(temp2);
-            Sender.addCheck(getCurrentDateTime() + " списано " + sum);
-            Recipient.addCheck(getCurrentDateTime() + " начислено " + sum);
+    public void sentToClient(Client sender, Client recipient, int sum) {
+        int senderAccount = sender.getCount().getAccount();
+        if (senderAccount >= sum) {
+            sender.getCount().setAccount(senderAccount - sum);
+            recipient.getCount().setAccount(recipient.getCount().getAccount() + sum);
+            sender.addCheck(getCurrentDateTime() + " debited " + sum);
+            recipient.addCheck(getCurrentDateTime() + " credited " + sum);
 
-            System.out.println("Операция прошла успешно! На счет клиента " + Recipient.getName() + " зачислено " + sum);
-            System.out.println("У клиента " + Sender.getName() + " на счету осталось " + Sender.getCount().getTotal());
+            System.out.println("Operation was successfully completed! " + sum + " was credited to the account of " + recipient.getName());
+            System.out.println(sender.getCount().getAccount() + " left on the account of " + sender.getName());
 
         } else {
-            System.out.println("У Вас недостаточно средств");
+            System.out.println("You don't have enough funds");
         }
     }
-
 
     public String getCurrentDateTime() {
         LocalDateTime currentDateTime = LocalDateTime.now();
@@ -33,11 +30,10 @@ public class ArturoBank {
         return formatter.format(currentDateTime);
     }
 
-
     public static void main(String[] args) {
         ArturoBank bank = new ArturoBank();
-        bank.clients.add(new Client("Егор", new Count(900)));
-        bank.clients.add(new Client("Катя", new Count(1100)));
+        bank.clients.add(new Client("Egor", new Count(900)));
+        bank.clients.add(new Client("Katy", new Count(1100)));
         bank.sentToClient(bank.clients.get(0), bank.clients.get(1), 355);
     }
 }
