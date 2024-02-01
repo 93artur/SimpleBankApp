@@ -1,5 +1,8 @@
 package com.arturobank;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -15,10 +18,8 @@ public class ArturoBank {
             recipient.getCount().setAccount(recipient.getCount().getAccount() + sum);
             sender.addCheck(getCurrentDateTime() + " sent " + sum);
             recipient.addCheck(getCurrentDateTime() + " credited " + sum);
-
             System.out.println("Operation was successfully completed! " + sum + " was sent to the account of " + recipient.getName());
             System.out.println(sender.getCount().getAccount() + " left on the account of " + sender.getName());
-
         } else {
             System.out.println("You don't have enough funds");
         }
@@ -32,8 +33,46 @@ public class ArturoBank {
 
     public static void main(String[] args) {
         ArturoBank bank = new ArturoBank();
-        bank.clients.add(new Client("Egor", new Count(900)));
-        bank.clients.add(new Client("Katy", new Count(1100)));
-        bank.sendToClient(bank.clients.get(0), bank.clients.get(1), 355);
+        Client sender;
+        Client recipient;
+        String senderName;
+        String recipientName;
+        int amount;
+        System.out.println("*********** ARTURO BANK HAS STARTED ***********");
+        System.out.println("User:");
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
+            while (true) {
+                senderName = reader.readLine();
+                if (senderName != null && senderName.matches("^[a-zA-Z]+$")) {
+                    sender = new Client(senderName, new Count(1000));
+                    break;
+                } else {
+                    System.out.println("Invalid name format");
+                }
+            }
+            System.out.println("To:");
+            while (true) {
+                recipientName = reader.readLine();
+                if (recipientName != null && recipientName.matches("^[a-zA-Z]+$")) {
+                    recipient = new Client(recipientName, new Count(1000));
+                    break;
+                } else {
+                    System.out.println("Invalid name format");
+                }
+            }
+            System.out.println("Amount:");
+            while (true) {
+                try {
+                    amount = Integer.parseInt(reader.readLine());
+                } catch (NumberFormatException e) {
+                    System.out.println("Use only Integers");
+                    continue;
+                }
+                break;
+            }
+            bank.sendToClient(sender, recipient, amount);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
