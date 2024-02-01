@@ -8,15 +8,15 @@ import java.util.List;
 public class ArturoBank {
     private List<Client> clients = new ArrayList<>();
 
-    public void sentToClient(Client sender, Client recipient, int sum) {
+    public void sendToClient(Client sender, Client recipient, int sum) {
         int senderAccount = sender.getCount().getAccount();
         if (senderAccount >= sum) {
             sender.getCount().setAccount(senderAccount - sum);
             recipient.getCount().setAccount(recipient.getCount().getAccount() + sum);
-            sender.addCheck(getCurrentDateTime() + " debited " + sum);
+            sender.addCheck(getCurrentDateTime() + " sent " + sum);
             recipient.addCheck(getCurrentDateTime() + " credited " + sum);
 
-            System.out.println("Operation was successfully completed! " + sum + " was credited to the account of " + recipient.getName());
+            System.out.println("Operation was successfully completed! " + sum + " was sent to the account of " + recipient.getName());
             System.out.println(sender.getCount().getAccount() + " left on the account of " + sender.getName());
 
         } else {
@@ -34,6 +34,6 @@ public class ArturoBank {
         ArturoBank bank = new ArturoBank();
         bank.clients.add(new Client("Egor", new Count(900)));
         bank.clients.add(new Client("Katy", new Count(1100)));
-        bank.sentToClient(bank.clients.get(0), bank.clients.get(1), 355);
+        bank.sendToClient(bank.clients.get(0), bank.clients.get(1), 355);
     }
 }
