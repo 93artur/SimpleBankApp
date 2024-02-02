@@ -31,21 +31,39 @@ public class ArturoBank {
         return formatter.format(currentDateTime);
     }
 
+    public Client isThereUser(String name) {
+        Client client = null;
+        for (int i = 0; i < clients.size(); i++) {
+            if (clients.get(i).getName().equals(name)) {
+                client = clients.get(i);
+                break;
+            }
+        }
+        return client;
+    }
+
     public static void main(String[] args) {
-        ArturoBank bank = new ArturoBank();
         Client sender;
         Client recipient;
         String senderName;
         String recipientName;
         int amount;
         System.out.println("*********** ARTURO BANK HAS STARTED ***********");
+        ArturoBank bank = new ArturoBank();
+        bank.clients.add(new Client("Egor", new Count(900)));
+        bank.clients.add(new Client("Katy", new Count(1100)));
+        bank.sendToClient(bank.clients.get(0), bank.clients.get(1), 355);
         System.out.println("User:");
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
             while (true) {
                 senderName = reader.readLine();
                 if (senderName != null && senderName.matches("^[a-zA-Z]+$")) {
-                    sender = new Client(senderName, new Count(1000));
-                    break;
+                    sender = bank.isThereUser(senderName);
+                    if (sender != null) {
+                        break;
+                    } else {
+                        System.out.println("There is no such user");
+                    }
                 } else {
                     System.out.println("Invalid name format");
                 }
@@ -54,8 +72,12 @@ public class ArturoBank {
             while (true) {
                 recipientName = reader.readLine();
                 if (recipientName != null && recipientName.matches("^[a-zA-Z]+$")) {
-                    recipient = new Client(recipientName, new Count(1000));
-                    break;
+                    recipient = bank.isThereUser(recipientName);
+                    if (recipient != null) {
+                        break;
+                    } else {
+                        System.out.println("There is no such user");
+                    }
                 } else {
                     System.out.println("Invalid name format");
                 }
