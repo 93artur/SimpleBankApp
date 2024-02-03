@@ -18,16 +18,7 @@ public class ClientBase {
         return clientsOfBank.get(name);
     }
 
-    public void addClient(String name) {
-        Client newClient = new Client(name, new Count(1000));
-        clientsOfBank.put(name, newClient);
-    }
-
-    public boolean containClient(String name){
-        if (clientsOfBank.containsKey(name)){
-            return true;
-        } else {
-            return false;
-        }
+    public void addClient(String name, Count count) {
+        clientsOfBank.put(name, new Client(name, count));
     }
 }

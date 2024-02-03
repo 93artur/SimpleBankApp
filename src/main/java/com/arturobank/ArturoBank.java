@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ArturoBank {
-    ClientBase clientBase = new ClientBase();
+    private ClientBase clientBase = new ClientBase();
 
     public void sendToClient(Client sender, Client recipient, int sum) {
         int senderAccount = sender.getCount().getAccount();
@@ -39,15 +39,14 @@ public class ArturoBank {
         int amount;
         System.out.println("*********** ARTURO BANK HAS STARTED ***********");
         ArturoBank bank = new ArturoBank();
-        bank.clientBase.addClient("Egor");
-        bank.clientBase.addClient("Katy");
-        bank.sendToClient(bank.clientBase.getClient("Egor"), bank.clientBase.getClient("Katy"), 355);
+        bank.clientBase.addClient("Egor", new Count(1000));
+        bank.clientBase.addClient("Katy", new Count(1000));
         System.out.println("User:");
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
             while (true) {
                 senderName = reader.readLine();
                 if (senderName != null && senderName.matches("^[a-zA-Z]+$")) {
-                    if (bank.clientBase.containClient(senderName)) {
+                    if (bank.clientBase.getClientsOfBank().containsKey(senderName)) {
                         sender = bank.clientBase.getClient(senderName);
                         break;
                     } else {
@@ -61,7 +60,7 @@ public class ArturoBank {
             while (true) {
                 recipientName = reader.readLine();
                 if (recipientName != null && recipientName.matches("^[a-zA-Z]+$")) {
-                    if (bank.clientBase.containClient(recipientName)) {
+                    if (bank.clientBase.getClientsOfBank().containsKey(recipientName)) {
                         recipient = bank.clientBase.getClient(recipientName);
                         break;
                     } else {
