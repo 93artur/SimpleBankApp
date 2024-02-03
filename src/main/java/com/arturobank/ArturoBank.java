@@ -10,14 +10,14 @@ public class ArturoBank {
     private ClientBase clientBase = new ClientBase();
 
     public void sendToClient(Client sender, Client recipient, int sum) {
-        int senderAccount = sender.getClientAccount().getAccount();
+        int senderAccount = sender.getAccount().getCount();
         if (senderAccount >= sum) {
-            sender.getClientAccount().setAccount(senderAccount - sum);
-            recipient.getClientAccount().setAccount(recipient.getClientAccount().getAccount() + sum);
+            sender.getAccount().setCount(senderAccount - sum);
+            recipient.getAccount().setCount(recipient.getAccount().getCount() + sum);
             sender.addBill(getCurrentDateTime() + " sent " + sum);
             recipient.addBill(getCurrentDateTime() + " credited " + sum);
             System.out.println("Operation was successfully completed! " + sum + " was sent to the account of " + recipient.getName());
-            System.out.println(sender.getClientAccount().getAccount() + " left on the account of " + sender.getName());
+            System.out.println(sender.getAccount().getCount() + " left on the account of " + sender.getName());
         } else {
             System.out.println("You don't have enough funds");
         }

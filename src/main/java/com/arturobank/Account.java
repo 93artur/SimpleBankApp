@@ -1,17 +1,17 @@
 package com.arturobank;
 
 public class Account {
-    private int account;
+    private int count;
 
-    public Account(int account) {
-        this.account = account;
+    public Account(int count) {
+        this.count = count;
     }
 
-    public int getAccount() {
-        return account;
+    public int getCount() {
+        return count;
     }
 
-    public void setAccount(int account) {
-        this.account = account;
+    public void setCount(int count) {
+        this.count = count;
     }
 }
