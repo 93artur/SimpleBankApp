@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ArturoBank {
-    private List<Client> clients = new ArrayList<>();
+    ClientBase clientBase = new ClientBase();
 
     public void sendToClient(Client sender, Client recipient, int sum) {
         int senderAccount = sender.getCount().getAccount();
@@ -31,17 +31,6 @@ public class ArturoBank {
         return formatter.format(currentDateTime);
     }
 
-    public Client isThereUser(String name) {
-        Client client = null;
-        for (int i = 0; i < clients.size(); i++) {
-            if (clients.get(i).getName().equals(name)) {
-                client = clients.get(i);
-                break;
-            }
-        }
-        return client;
-    }
-
     public static void main(String[] args) {
         Client sender;
         Client recipient;
@@ -50,19 +39,19 @@ public class ArturoBank {
         int amount;
         System.out.println("*********** ARTURO BANK HAS STARTED ***********");
         ArturoBank bank = new ArturoBank();
-        bank.clients.add(new Client("Egor", new Count(900)));
-        bank.clients.add(new Client("Katy", new Count(1100)));
-        bank.sendToClient(bank.clients.get(0), bank.clients.get(1), 355);
+        bank.clientBase.addClient("Egor");
+        bank.clientBase.addClient("Katy");
+        bank.sendToClient(bank.clientBase.getClient("Egor"), bank.clientBase.getClient("Katy"), 355);
         System.out.println("User:");
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
             while (true) {
                 senderName = reader.readLine();
                 if (senderName != null && senderName.matches("^[a-zA-Z]+$")) {
-                    sender = bank.isThereUser(senderName);
-                    if (sender != null) {
+                    if (bank.clientBase.containClient(senderName)) {
+                        sender = bank.clientBase.getClient(senderName);
                         break;
                     } else {
-                        System.out.println("There is no such user");
+                        System.out.println("There is no client named " + senderName);
                     }
                 } else {
                     System.out.println("Invalid name format");
@@ -72,11 +61,11 @@ public class ArturoBank {
             while (true) {
                 recipientName = reader.readLine();
                 if (recipientName != null && recipientName.matches("^[a-zA-Z]+$")) {
-                    recipient = bank.isThereUser(recipientName);
-                    if (recipient != null) {
+                    if (bank.clientBase.containClient(recipientName)) {
+                        recipient = bank.clientBase.getClient(recipientName);
                         break;
                     } else {
-                        System.out.println("There is no such user");
+                        System.out.println("There is no client named " + recipientName);
                     }
                 } else {
                     System.out.println("Invalid name format");
