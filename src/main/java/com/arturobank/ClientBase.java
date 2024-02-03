@@ -18,7 +18,7 @@ public class ClientBase {
         return clientsOfBank.get(name);
     }
 
-    public void addClient(String name, Count count) {
+    public void addClient(String name, Account count) {
         clientsOfBank.put(name, new Client(name, count));
     }
 }

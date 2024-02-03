@@ -5,21 +5,19 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ArturoBank {
     private ClientBase clientBase = new ClientBase();
 
     public void sendToClient(Client sender, Client recipient, int sum) {
-        int senderAccount = sender.getCount().getAccount();
+        int senderAccount = sender.getAccount().getAccount();
         if (senderAccount >= sum) {
-            sender.getCount().setAccount(senderAccount - sum);
-            recipient.getCount().setAccount(recipient.getCount().getAccount() + sum);
-            sender.addCheck(getCurrentDateTime() + " sent " + sum);
-            recipient.addCheck(getCurrentDateTime() + " credited " + sum);
+            sender.getAccount().setAccount(senderAccount - sum);
+            recipient.getAccount().setAccount(recipient.getAccount().getAccount() + sum);
+            sender.addBill(getCurrentDateTime() + " sent " + sum);
+            recipient.addBill(getCurrentDateTime() + " credited " + sum);
             System.out.println("Operation was successfully completed! " + sum + " was sent to the account of " + recipient.getName());
-            System.out.println(sender.getCount().getAccount() + " left on the account of " + sender.getName());
+            System.out.println(sender.getAccount().getAccount() + " left on the account of " + sender.getName());
         } else {
             System.out.println("You don't have enough funds");
         }
@@ -39,19 +37,18 @@ public class ArturoBank {
         int amount;
         System.out.println("*********** ARTURO BANK HAS STARTED ***********");
         ArturoBank bank = new ArturoBank();
-        bank.clientBase.addClient("Egor", new Count(1000));
-        bank.clientBase.addClient("Katy", new Count(1000));
+        bank.clientBase.addClient("Egor", new Account(1000));
+        bank.clientBase.addClient("Katy", new Account(1000));
         System.out.println("User:");
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
             while (true) {
                 senderName = reader.readLine();
                 if (senderName != null && senderName.matches("^[a-zA-Z]+$")) {
-                    if (bank.clientBase.getClientsOfBank().containsKey(senderName)) {
-                        sender = bank.clientBase.getClient(senderName);
+                    sender = bank.clientBase.getClient(senderName);
+                    if (sender != null) {
                         break;
-                    } else {
-                        System.out.println("There is no client named " + senderName);
                     }
+                    System.out.println("There is no client named " + senderName);
                 } else {
                     System.out.println("Invalid name format");
                 }
@@ -60,12 +57,11 @@ public class ArturoBank {
             while (true) {
                 recipientName = reader.readLine();
                 if (recipientName != null && recipientName.matches("^[a-zA-Z]+$")) {
-                    if (bank.clientBase.getClientsOfBank().containsKey(recipientName)) {
-                        recipient = bank.clientBase.getClient(recipientName);
+                    recipient = bank.clientBase.getClient(recipientName);
+                    if (recipient != null) {
                         break;
-                    } else {
-                        System.out.println("There is no client named " + recipientName);
                     }
+                    System.out.println("There is no client named " + recipientName);
                 } else {
                     System.out.println("Invalid name format");
                 }

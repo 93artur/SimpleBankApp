@@ -1,9 +1,9 @@
 package com.arturobank;
 
-public class Count {
+public class Account {
     private int account;
 
-    public Count(int account) {
+    public Account(int account) {
         this.account = account;
     }
 

@@ -5,20 +5,20 @@ import java.util.List;
 
 public class Client {
     private String name;
-    private Count count;
+    private Account account;
     private List <String> bills = new ArrayList<>();
 
-    public Client(String name, Count count) {
+    public Client(String name, Account account) {
         this.name = name;
-        this.count = count;
+        this.account = account;
     }
 
-    public Count getCount() {
-        return count;
+    public Account getAccount() {
+        return account;
     }
 
-    public void setCount(Count count) {
-        this.count = count;
+    public void setAccount(Account account) {
+        this.account = account;
     }
 
     public String getName() {
@@ -29,7 +29,7 @@ public class Client {
         return bills;
     }
 
-    public void addCheck (String check){
-        bills.add(check);
+    public void addBill(String bill){
+        bills.add(bill);
     }
 }
