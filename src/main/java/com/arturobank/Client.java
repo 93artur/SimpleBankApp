@@ -13,11 +13,11 @@ public class Client {
         this.account = account;
     }
 
-    public Account getAccount() {
+    public Account getClientAccount() {
         return account;
     }
 
-    public void setAccount(Account account) {
+    public void setClientAccount(Account account) {
         this.account = account;
     }
 
