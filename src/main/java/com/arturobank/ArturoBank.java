@@ -36,9 +36,9 @@ public class ArturoBank {
         while (true) {
             clientName = reader.readLine();
             if (clientName != null && clientName.matches("^[a-zA-Z]+$")) {
-                client = this.clientBase.getClient(clientName);
+                client = clientBase.getClient(clientName);
                 if (client == null) {
-                    this.clientBase.addClient(clientName, new Account(1000));
+                    clientBase.addClient(clientName, new Account(1000));
                     System.out.println("User " + clientName + " is added");
                     break;
                 }
@@ -59,7 +59,7 @@ public class ArturoBank {
         while (true) {
             senderName = reader.readLine();
             if (senderName != null && senderName.matches("^[a-zA-Z]+$")) {
-                sender = this.clientBase.getClient(senderName);
+                sender = clientBase.getClient(senderName);
                 if (sender != null) {
                     break;
                 }
@@ -72,7 +72,7 @@ public class ArturoBank {
         while (true) {
             recipientName = reader.readLine();
             if (recipientName != null && recipientName.matches("^[a-zA-Z]+$")) {
-                recipient = this.clientBase.getClient(recipientName);
+                recipient = clientBase.getClient(recipientName);
                 if (recipient != null) {
                     break;
                 }
@@ -91,7 +91,7 @@ public class ArturoBank {
             }
             break;
         }
-        this.sendToClient(sender, recipient, amount);
+        sendToClient(sender, recipient, amount);
     }
 
     public void showCommands() {
@@ -119,7 +119,7 @@ public class ArturoBank {
                 if (command.equals("Add user")) {
                     bank.addUser(reader);
                 } else {
-                    System.out.println("Select a command from the list");
+                    System.out.println("There is no such command!");
                 }
             }
         } catch (IOException e) {
