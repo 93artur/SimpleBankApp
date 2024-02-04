@@ -91,7 +91,6 @@ public class ArturoBank {
             }
             break;
         }
-        this.sendToClient(sender, recipient, amount);
     }
 
     public void showCommands() {
@@ -119,7 +118,7 @@ public class ArturoBank {
                 if (command.equals("Add user")) {
                     bank.addUser(reader);
                 } else {
-                    System.out.println("Select a command from the list");
+                    System.out.println("There is no such command!");
                 }
             }
         } catch (IOException e) {
