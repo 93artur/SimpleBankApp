@@ -29,54 +29,99 @@ public class ArturoBank {
         return formatter.format(currentDateTime);
     }
 
-    public static void main(String[] args) {
+    public void addUser(BufferedReader reader) throws IOException {
+        String clientName;
+        Client client;
+        System.out.println("Enter Username");
+        while (true) {
+            clientName = reader.readLine();
+            if (clientName != null && clientName.matches("^[a-zA-Z]+$")) {
+                client = this.clientBase.getClient(clientName);
+                if (client == null) {
+                    this.clientBase.addClient(clientName, new Account(1000));
+                    System.out.println("User " + clientName + " is added");
+                    break;
+                }
+                System.out.println("A user named " + clientName + " exists");
+            } else {
+                System.out.println("Invalid name format");
+            }
+        }
+    }
+
+    public void executeTransaction(BufferedReader reader) throws IOException {
         Client sender;
         Client recipient;
         String senderName;
         String recipientName;
         int amount;
+        System.out.println("User:");
+        while (true) {
+            senderName = reader.readLine();
+            if (senderName != null && senderName.matches("^[a-zA-Z]+$")) {
+                sender = this.clientBase.getClient(senderName);
+                if (sender != null) {
+                    break;
+                }
+                System.out.println("There is no client named " + senderName);
+            } else {
+                System.out.println("Invalid name format");
+            }
+        }
+        System.out.println("To:");
+        while (true) {
+            recipientName = reader.readLine();
+            if (recipientName != null && recipientName.matches("^[a-zA-Z]+$")) {
+                recipient = this.clientBase.getClient(recipientName);
+                if (recipient != null) {
+                    break;
+                }
+                System.out.println("There is no client named " + recipientName);
+            } else {
+                System.out.println("Invalid name format");
+            }
+        }
+        System.out.println("Amount:");
+        while (true) {
+            try {
+                amount = Integer.parseInt(reader.readLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Use only Integers");
+                continue;
+            }
+            break;
+        }
+        this.sendToClient(sender, recipient, amount);
+    }
+
+    public void showCommands() {
+        System.out.println("Select a command from the list:");
+        System.out.println("Add user");
+        System.out.println("Execute transaction");
+        System.out.println("Exit");
+    }
+
+    public static void main(String[] args) {
         System.out.println("*********** ARTURO BANK HAS STARTED ***********");
         ArturoBank bank = new ArturoBank();
         bank.clientBase.addClient("Egor", new Account(1000));
         bank.clientBase.addClient("Katy", new Account(1000));
-        System.out.println("User:");
+        bank.showCommands();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
             while (true) {
-                senderName = reader.readLine();
-                if (senderName != null && senderName.matches("^[a-zA-Z]+$")) {
-                    sender = bank.clientBase.getClient(senderName);
-                    if (sender != null) {
-                        break;
-                    }
-                    System.out.println("There is no client named " + senderName);
+                String command = reader.readLine();
+                if (command.equals("Exit")) {
+                    break;
+                }
+                if (command.equals("Execute transaction")) {
+                    bank.executeTransaction(reader);
+                }
+                if (command.equals("Add user")) {
+                    bank.addUser(reader);
                 } else {
-                    System.out.println("Invalid name format");
+                    System.out.println("Select a command from the list");
                 }
             }
-            System.out.println("To:");
-            while (true) {
-                recipientName = reader.readLine();
-                if (recipientName != null && recipientName.matches("^[a-zA-Z]+$")) {
-                    recipient = bank.clientBase.getClient(recipientName);
-                    if (recipient != null) {
-                        break;
-                    }
-                    System.out.println("There is no client named " + recipientName);
-                } else {
-                    System.out.println("Invalid name format");
-                }
-            }
-            System.out.println("Amount:");
-            while (true) {
-                try {
-                    amount = Integer.parseInt(reader.readLine());
-                } catch (NumberFormatException e) {
-                    System.out.println("Use only Integers");
-                    continue;
-                }
-                break;
-            }
-            bank.sendToClient(sender, recipient, amount);
         } catch (IOException e) {
             e.printStackTrace();
         }
