@@ -15,12 +15,11 @@ public class ClientBase {
         this.clientsOfBank = clientsOfBank;
     }
 
-    public Client getClientByCountNumber(int countNumber) {
+    public Client getClientByAccountNumber(int accountNumber) {
         Client client = null;
-        ArrayList<Client> values = new ArrayList<>(clientsOfBank.values());
-        for (int i = 0; i < values.size(); i++){
-            if (values.get(i).getCountNumber() == countNumber){
-                client = values.get(i);
+        for(Client client1 : clientsOfBank.values()){
+            if (client1.getAccountNumber() == accountNumber){
+                client = client1;
                 break;
             }
         }

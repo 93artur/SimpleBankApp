@@ -9,18 +9,18 @@ import java.time.format.DateTimeFormatter;
 
 public class ArturoBank {
     private ClientBase clientBase = new ClientBase();
-    private CountsBase countsBase = new CountsBase();
+    private AccountBase accountBase = new AccountBase();
     private Client myClient;
 
     public void sendToClient(int countNumber, int sum) {
-        countsBase.changeCount(myClient.getCountNumber(), countsBase.getCount(myClient.getCountNumber()) - sum);
-        countsBase.changeCount(countNumber, countsBase.getCount(countNumber) + sum);
+        accountBase.changeCount(myClient.getAccountNumber(), accountBase.getAccount(myClient.getAccountNumber()) - sum);
+        accountBase.changeCount(countNumber, accountBase.getAccount(countNumber) + sum);
         myClient.addBill(getCurrentDateTime() + " sent " + sum);
-        Client recipient = clientBase.getClientByCountNumber(countNumber);
+        Client recipient = clientBase.getClientByAccountNumber(countNumber);
         recipient.addBill(getCurrentDateTime() + " credited " + sum);
         System.out.println("Operation was successfully completed! " + sum +
                 " was sent to the account of " + recipient.getUserName());
-        System.out.println(countsBase.getCount(myClient.getCountNumber()) +
+        System.out.println(accountBase.getAccount(myClient.getAccountNumber()) +
                 " left on the account of " + myClient.getUserName());
     }
 
@@ -57,36 +57,36 @@ public class ArturoBank {
             break;
         }
         myClient = new Client(userName, password);
-        int countNumber = countsBase.getCountsBase().size() + 1;
-        myClient.setCountNumber(countNumber);
+        int accountNumber = accountBase.getAccountsBase().size() + 1;
+        myClient.setAccountNumber(accountNumber);
         clientBase.addClient(myClient);
-        countsBase.addCount(countNumber, 1000);
-        System.out.println("New user registered. Your account number " + countNumber);
+        accountBase.addAccount(accountNumber, 1000);
+        System.out.println("New user registered. Your account number " + accountNumber);
     }
 
-    public void registerUser(String userName, int password, int countNumber) {
+    public void registerUser(String userName, int password, int accountNumber) {
         Client newClient = new Client(userName, password);
-        newClient.setCountNumber(countNumber);
+        newClient.setAccountNumber(accountNumber);
         clientBase.addClient(newClient);
-        countsBase.addCount(countNumber, 1000);
+        accountBase.addAccount(accountNumber, 1000);
     }
 
     public void executeTransaction(BufferedReader reader) throws IOException {
-        int countNumber;
+        int accountNumber;
         int amount;
         System.out.println("Enter account number:");
         while (true) {
             try {
-                countNumber = Integer.parseInt(reader.readLine());
+                accountNumber = Integer.parseInt(reader.readLine());
             } catch (NumberFormatException e) {
                 System.out.println("Use only Integers");
                 continue;
             }
-            if (myClient.getCountNumber() == countNumber) {
+            if (myClient.getAccountNumber() == accountNumber) {
                 System.out.println("You can't choose your account");
                 continue;
             }
-            if (!countsBase.getCountsBase().containsKey(countNumber)) {
+            if (!accountBase.getAccountsBase().containsKey(accountNumber)) {
                 System.out.println("Such bank account does not exist");
                 continue;
             }
@@ -100,14 +100,14 @@ public class ArturoBank {
                 System.out.println("Use only Integers");
                 continue;
             }
-            if (amount > countsBase.getCount(myClient.getCountNumber())) {
+            if (amount > accountBase.getAccount(myClient.getAccountNumber())) {
                 System.out.println("You don't have enough funds. You have only " +
-                        countsBase.getCount(myClient.getCountNumber()));
+                        accountBase.getAccount(myClient.getAccountNumber()));
                 continue;
             }
             break;
         }
-        sendToClient(countNumber, amount);
+        sendToClient(accountNumber, amount);
     }
 
     public void showCommands() {
@@ -128,8 +128,8 @@ public class ArturoBank {
             while (true) {
                 userName = reader.readLine();
                 if (userName != null && userName.matches("^[a-zA-Z]+$")) {
-                    if (bank.clientBase.getClientByName(userName) != null) {
-                        bank.myClient = bank.clientBase.getClientByName(userName);
+                    bank.myClient = bank.clientBase.getClientByName(userName);
+                    if (bank.myClient != null) {
                         break;
                     } else {
                         System.out.println("Such client do not exist. Do you want register? Type \"Yes\" or \"No\"");

@@ -7,7 +7,7 @@ public class Client {
     private String userName;
     private int password;
 
-    private int countNumber;
+    private int accountNumber;
     private List<String> bills = new ArrayList<>();
 
     public Client(String userName, int password) {
@@ -15,12 +15,12 @@ public class Client {
         this.password = password;
     }
 
-    public int getCountNumber() {
-        return countNumber;
+    public int getAccountNumber() {
+        return accountNumber;
     }
 
-    public void setCountNumber(int countNumber) {
-        this.countNumber = countNumber;
+    public void setAccountNumber(int accountNumber) {
+        this.accountNumber = accountNumber;
     }
 
     public int getPassword() {
