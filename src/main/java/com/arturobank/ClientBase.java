@@ -1,5 +1,6 @@
 package com.arturobank;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,11 +15,26 @@ public class ClientBase {
         this.clientsOfBank = clientsOfBank;
     }
 
-    public Client getClient(String name) {
+    public Client getClientByCountNumber(int countNumber) {
+        Client client = null;
+        ArrayList<Client> values = new ArrayList<>(clientsOfBank.values());
+        for (int i = 0; i < values.size(); i++){
+            if (values.get(i).getCountNumber() == countNumber){
+                client = values.get(i);
+                break;
+            }
+        }
+        return client;
+    }
+    public Client getClientByName(String name){
         return clientsOfBank.get(name);
     }
 
-    public void addClient(String name, Account count) {
-        clientsOfBank.put(name, new Client(name, count));
+    public void addClient(String name, int password) {
+        clientsOfBank.put(name, new Client(name,password));
+    }
+
+    public void addClient(Client client){
+        clientsOfBank.put(client.getUserName(), client);
     }
 }
