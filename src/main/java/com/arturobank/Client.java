@@ -4,32 +4,38 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Client {
-    private String name;
-    private Account account;
-    private List <String> bills = new ArrayList<>();
+    private String userName;
+    private int password;
 
-    public Client(String name, Account account) {
-        this.name = name;
-        this.account = account;
+    private int accountNumber;
+    private List<String> bills = new ArrayList<>();
+
+    public Client(String userName, int password) {
+        this.userName = userName;
+        this.password = password;
     }
 
-    public Account getAccount() {
-        return account;
+    public int getAccountNumber() {
+        return accountNumber;
     }
 
-    public void setAccount(Account account) {
-        this.account = account;
+    public void setAccountNumber(int accountNumber) {
+        this.accountNumber = accountNumber;
     }
 
-    public String getName() {
-        return name;
+    public int getPassword() {
+        return password;
+    }
+
+    public String getUserName() {
+        return userName;
     }
 
     public List<String> getBills() {
         return bills;
     }
 
-    public void addBill(String bill){
+    public void addBill(String bill) {
         bills.add(bill);
     }
 }

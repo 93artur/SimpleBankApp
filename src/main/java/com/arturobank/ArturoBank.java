@@ -6,21 +6,22 @@ import java.io.InputStreamReader;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+
 public class ArturoBank {
     private ClientBase clientBase = new ClientBase();
+    private AccountBase accountBase = new AccountBase();
+    private Client myClient;
 
-    public void sendToClient(Client sender, Client recipient, int sum) {
-        int senderAccount = sender.getAccount().getCount();
-        if (senderAccount >= sum) {
-            sender.getAccount().setCount(senderAccount - sum);
-            recipient.getAccount().setCount(recipient.getAccount().getCount() + sum);
-            sender.addBill(getCurrentDateTime() + " sent " + sum);
-            recipient.addBill(getCurrentDateTime() + " credited " + sum);
-            System.out.println("Operation was successfully completed! " + sum + " was sent to the account of " + recipient.getName());
-            System.out.println(sender.getAccount().getCount() + " left on the account of " + sender.getName());
-        } else {
-            System.out.println("You don't have enough funds");
-        }
+    public void sendToClient(int countNumber, int sum) {
+        accountBase.changeCount(myClient.getAccountNumber(), accountBase.getAccount(myClient.getAccountNumber()) - sum);
+        accountBase.changeCount(countNumber, accountBase.getAccount(countNumber) + sum);
+        myClient.addBill(getCurrentDateTime() + " sent " + sum);
+        Client recipient = clientBase.getClientByAccountNumber(countNumber);
+        recipient.addBill(getCurrentDateTime() + " credited " + sum);
+        System.out.println("Operation was successfully completed! " + sum +
+                " was sent to the account of " + recipient.getUserName());
+        System.out.println(accountBase.getAccount(myClient.getAccountNumber()) +
+                " left on the account of " + myClient.getUserName());
     }
 
     public String getCurrentDateTime() {
@@ -29,57 +30,67 @@ public class ArturoBank {
         return formatter.format(currentDateTime);
     }
 
-    public void addUser(BufferedReader reader) throws IOException {
-        String clientName;
-        Client client;
-        System.out.println("Enter Username");
+    public void registerUser(BufferedReader reader) throws IOException {
+        String userName;
+        int password;
+        System.out.println("Enter Username:");
         while (true) {
-            clientName = reader.readLine();
-            if (clientName != null && clientName.matches("^[a-zA-Z]+$")) {
-                client = clientBase.getClient(clientName);
-                if (client == null) {
-                    clientBase.addClient(clientName, new Account(1000));
-                    System.out.println("User " + clientName + " is added");
+            userName = reader.readLine();
+            if (userName != null && userName.matches("^[a-zA-Z]+$")) {
+                myClient = clientBase.getClientByName(userName);
+                if (myClient == null) {
                     break;
                 }
-                System.out.println("A user named " + clientName + " exists");
+                System.out.println("A user named " + userName + " exists");
             } else {
                 System.out.println("Invalid name format");
             }
         }
+        System.out.println("Enter password:");
+        while (true) {
+            try {
+                password = Integer.parseInt(reader.readLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Use only Integers");
+                continue;
+            }
+            break;
+        }
+        myClient = new Client(userName, password);
+        int accountNumber = accountBase.getAccountsBase().size() + 1;
+        myClient.setAccountNumber(accountNumber);
+        clientBase.addClient(myClient);
+        accountBase.addAccount(accountNumber, 1000);
+        System.out.println("New user registered. Your account number " + accountNumber);
+    }
+
+    public void registerUser(String userName, int password, int accountNumber) {
+        Client newClient = new Client(userName, password);
+        newClient.setAccountNumber(accountNumber);
+        clientBase.addClient(newClient);
+        accountBase.addAccount(accountNumber, 1000);
     }
 
     public void executeTransaction(BufferedReader reader) throws IOException {
-        Client sender;
-        Client recipient;
-        String senderName;
-        String recipientName;
+        int accountNumber;
         int amount;
-        System.out.println("User:");
+        System.out.println("Enter account number:");
         while (true) {
-            senderName = reader.readLine();
-            if (senderName != null && senderName.matches("^[a-zA-Z]+$")) {
-                sender = clientBase.getClient(senderName);
-                if (sender != null) {
-                    break;
-                }
-                System.out.println("There is no client named " + senderName);
-            } else {
-                System.out.println("Invalid name format");
+            try {
+                accountNumber = Integer.parseInt(reader.readLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Use only Integers");
+                continue;
             }
-        }
-        System.out.println("To:");
-        while (true) {
-            recipientName = reader.readLine();
-            if (recipientName != null && recipientName.matches("^[a-zA-Z]+$")) {
-                recipient = clientBase.getClient(recipientName);
-                if (recipient != null) {
-                    break;
-                }
-                System.out.println("There is no client named " + recipientName);
-            } else {
-                System.out.println("Invalid name format");
+            if (myClient.getAccountNumber() == accountNumber) {
+                System.out.println("You can't choose your account");
+                continue;
             }
+            if (!accountBase.getAccountsBase().containsKey(accountNumber)) {
+                System.out.println("Such bank account does not exist");
+                continue;
+            }
+            break;
         }
         System.out.println("Amount:");
         while (true) {
@@ -89,14 +100,18 @@ public class ArturoBank {
                 System.out.println("Use only Integers");
                 continue;
             }
+            if (amount > accountBase.getAccount(myClient.getAccountNumber())) {
+                System.out.println("You don't have enough funds. You have only " +
+                        accountBase.getAccount(myClient.getAccountNumber()));
+                continue;
+            }
             break;
         }
-        sendToClient(sender, recipient, amount);
+        sendToClient(accountNumber, amount);
     }
 
     public void showCommands() {
         System.out.println("Select a command from the list:");
-        System.out.println("Add user");
         System.out.println("Execute transaction");
         System.out.println("Exit");
     }
@@ -104,10 +119,59 @@ public class ArturoBank {
     public static void main(String[] args) {
         System.out.println("*********** ARTURO BANK HAS STARTED ***********");
         ArturoBank bank = new ArturoBank();
-        bank.clientBase.addClient("Egor", new Account(1000));
-        bank.clientBase.addClient("Katy", new Account(1000));
-        bank.showCommands();
+        bank.registerUser("Katy", 1, 1);
+        bank.registerUser("Egor", 2, 2);
+        String userName;
+        int password;
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
+            System.out.println("Username:");
+            while (true) {
+                userName = reader.readLine();
+                if (userName != null && userName.matches("^[a-zA-Z]+$")) {
+                    bank.myClient = bank.clientBase.getClientByName(userName);
+                    if (bank.myClient != null) {
+                        break;
+                    } else {
+                        System.out.println("Such client do not exist. Do you want register? Type \"Yes\" or \"No\"");
+                        while (true) {
+                            String answer = reader.readLine();
+                            if (answer.equals("Yes")) {
+                                bank.registerUser(reader);
+                                System.out.println("Username: ");
+                                break;
+                            }
+                            if (answer.equals("No")) {
+                                System.out.println("Enter Username");
+                                break;
+                            } else {
+                                System.out.println("There is no such command!");
+                            }
+                        }
+                        continue;
+                    }
+                } else {
+                    System.out.println("Invalid name format");
+                    continue;
+                }
+            }
+            System.out.println("Password:");
+            while (true) {
+                try {
+                    password = Integer.parseInt(reader.readLine());
+                } catch (NumberFormatException e) {
+                    System.out.println("Use only Integers");
+                    continue;
+                } catch (NullPointerException e) {
+                    System.out.println("Incorrect password");
+                    continue;
+                }
+                if (bank.myClient.getPassword() != password) {
+                    System.out.println("Incorrect password");
+                    continue;
+                }
+                break;
+            }
+            bank.showCommands();
             while (true) {
                 String command = reader.readLine();
                 if (command.equals("Exit")) {
@@ -115,13 +179,11 @@ public class ArturoBank {
                 }
                 if (command.equals("Execute transaction")) {
                     bank.executeTransaction(reader);
-                }
-                if (command.equals("Add user")) {
-                    bank.addUser(reader);
                 } else {
                     System.out.println("There is no such command!");
                 }
             }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
