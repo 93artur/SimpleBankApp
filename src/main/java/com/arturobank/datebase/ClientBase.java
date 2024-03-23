@@ -1,19 +1,9 @@
 package com.arturobank.datebase;
 
-import com.arturobank.clientservice.Client;
+import com.arturobank.clientservice.model.Client;
 
-import java.util.HashMap;
-import java.util.Map;
-
-public class ClientBase {
-    private Map<String, Client> clientsOfBank = new HashMap<>();
-
-    public Map<String, Client> getClientsOfBank() {
-        return clientsOfBank;
-    }
-
-    public void setClientsOfBank(Map<String, Client> clientsOfBank) {
-        this.clientsOfBank = clientsOfBank;
-    }
-
+public interface ClientBase {
+    Client registerClient(Client client);
+    Client getClientByAccountNumber(long accountNumber);
+    Client getClientByUserName(String userName);
 }

@@ -1,14 +1,17 @@
 package com.arturobank.viewlayer;
 
-import com.arturobank.clientservice.*;
-import com.arturobank.datebase.*;
+import com.arturobank.clientservice.ClientServiceIml;
+import com.arturobank.clientservice.model.Client;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
-public class ConsoleReader {
+public class ConsoleControllerImp implements ConsoleController {
+    private ClientServiceIml clientServiceIml = new ClientServiceIml();
+    private final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
-    public boolean consistsOfLetters(String line) {
+    private boolean consistsOfLetters(String line) {
         if (line != null && line.matches("^[a-zA-Z]+$")) {
             return true;
         } else {
@@ -17,10 +20,10 @@ public class ConsoleReader {
         }
     }
 
-    public void showClientCommands() {
+    public void showClientCommands(String clientName) {
+        System.out.printf("Welcome %s! Select a command from the list:\n", clientName);
         System.out.println("1. Execute transaction");
         System.out.println("2. Exit");
-        System.out.println("Select a command from the list:");
     }
 
     public void showStartCommands() {
@@ -30,11 +33,18 @@ public class ConsoleReader {
         System.out.println("Enter your choice:");
     }
 
-    public void registerClient(BufferedReader reader, ClientOperation clientOperation, ClientBase
-            clientBase, AccountBase accountBase) {
+    @Override
+    public void exitCommand() {
+        System.out.println("Good bye!");
+        System.exit(1);
+    }
+
+    @Override
+    public Client registerClient() {
         String userName;
         String clientName;
         int password;
+        Client client = null;
         System.out.println("Enter Username:");
         while (true) {
             try {
@@ -43,7 +53,7 @@ public class ConsoleReader {
                 throw new RuntimeException(e);
             }
             if (consistsOfLetters(userName)) {
-                Client client = clientBase.getClientsOfBank().get(userName);
+                client = clientServiceIml.getClientByUserName(userName);
                 if (client == null) {
                     break;
                 } else {
@@ -78,13 +88,14 @@ public class ConsoleReader {
                 break;
             }
         }
-        Client client = new Client(userName, password, clientName, accountBase.createAccountNumber());
-        clientBase.getClientsOfBank().put(userName, client);
-        accountBase.getAccountsBase().put(client.getAccountNumber(), 1000);
-        System.out.println("Client named " + clientName + " registered!");
+        client = new Client(clientName, userName, password);
+        clientServiceIml.registerClient(client);
+        System.out.println(client.toString());
+        return client;
     }
 
-    public Client logIn(BufferedReader reader, ClientBase clientBase) {
+    @Override
+    public Client logIn() {
         Client client = null;
         System.out.println("Enter Username:");
         String userName;
@@ -97,7 +108,7 @@ public class ConsoleReader {
             if (!consistsOfLetters(userName)) {
                 continue;
             }
-            client = clientBase.getClientsOfBank().get(userName);
+            client = clientServiceIml.getClientByUserName(userName);
             if (client == null) {
                 System.out.println("Username doesn't exist.");
                 continue;
@@ -115,7 +126,7 @@ public class ConsoleReader {
                 System.out.println("Use only Integers");
                 continue;
             }
-            if (client.getAccountNumber() != password) {
+            if (client.getPassword() != password) {
                 System.out.println("Wrong password.");
                 continue;
             }
@@ -125,7 +136,69 @@ public class ConsoleReader {
         return client;
     }
 
-    public int chooseStartCommand(BufferedReader reader) {
+    private long getRecipientAccountNumber(Client sender) {
+        long accountNumber = 0;
+        System.out.println("Enter recipient account number:");
+        while (true) {
+            String line;
+            try {
+                line = reader.readLine();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            try {
+                accountNumber = Integer.parseInt(line);
+            } catch (NumberFormatException e) {
+                System.out.println("Use only Integers");
+                continue;
+            }
+            if (clientServiceIml.getClientByAccountNumber(accountNumber) == null) {
+                System.out.println("Recipient account number does not exist. Try again:");
+                continue;
+            }
+            if (sender.getAccountNumber() == accountNumber) {
+                System.out.println("Don't choose your account number");
+                continue;
+            }
+            break;
+        }
+        return accountNumber;
+    }
+
+    private int getAmountToSend(Client sender) {
+        int amount = 0;
+        System.out.println("Enter amount:");
+        while (true) {
+            String line;
+            try {
+                line = reader.readLine();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            try {
+                amount = Integer.parseInt(line);
+            } catch (NumberFormatException e) {
+                System.out.println("Use only Integers");
+                continue;
+            }
+            if (amount > sender.getBalance()) {
+                System.out.println("You don't have enough funds");
+                continue;
+            }
+            break;
+        }
+        return amount;
+    }
+
+    @Override
+    public void sendMoney(Client sender) {
+        long recipientAccountNumber = getRecipientAccountNumber(sender);
+        int amount = getAmountToSend(sender);
+        clientServiceIml.sendMoney(sender, recipientAccountNumber, amount);
+        System.out.printf("Operation was successfully completed! %d was sent to the account %d\n", amount, recipientAccountNumber);
+    }
+
+    public int chooseStartCommand() {
         int commandNumber;
         while (true) {
             String line;
@@ -149,7 +222,7 @@ public class ConsoleReader {
         return commandNumber;
     }
 
-    public int chooseClientCommand(BufferedReader reader) {
+    public int chooseClientCommand() {
         int commandNumber;
         while (true) {
             String line;
@@ -171,60 +244,6 @@ public class ConsoleReader {
             break;
         }
         return commandNumber;
-    }
-
-    public int getRecipientAccountNumber(BufferedReader reader, AccountBase accountBase, Client client) {
-        int accountNumber = 0;
-        System.out.println("Enter recipient account number:");
-        while (true) {
-            String line;
-            try {
-                line = reader.readLine();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            try {
-                accountNumber = Integer.parseInt(line);
-            } catch (NumberFormatException e) {
-                System.out.println("Use only Integers");
-                continue;
-            }
-            if (!accountBase.getAccountsBase().containsKey(accountNumber)) {
-                System.out.println("Recipient account number does not exist. Try again:");
-                continue;
-            }
-            if (client.getAccountNumber() == accountNumber) {
-                System.out.println("Don't choose your account number");
-                continue;
-            }
-            break;
-        }
-        return accountNumber;
-    }
-
-    public int getAmountToSend(BufferedReader reader, Client client, AccountBase accountBase) {
-        int amount = 0;
-        System.out.println("Enter amount:");
-        while (true) {
-            String line;
-            try {
-                line = reader.readLine();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            try {
-                amount = Integer.parseInt(line);
-            } catch (NumberFormatException e) {
-                System.out.println("Use only Integers");
-                continue;
-            }
-            if (amount > accountBase.getAccountsBase().get(client.getAccountNumber())) {
-                System.out.println("You don't have enough funds");
-                continue;
-            }
-            break;
-        }
-        return amount;
     }
 }
 
