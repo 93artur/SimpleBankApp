@@ -1,4 +1,4 @@
-package com.arturobank.datebase;
+package com.arturobank.repository;
 
 import com.arturobank.clientservice.model.Client;
 
@@ -20,22 +20,15 @@ public class ClientBaseImpl implements ClientBase {
 
     @Override
     public Client getClientByAccountNumber(long accountNumber) {
-        Client client = null;
-        for (Long key : clientsOfBank.keySet()) {
-            if (key == accountNumber) {
-                client = clientsOfBank.get(key);
-                break;
-            }
-        }
-        return client;
+        return clientsOfBank.get(accountNumber);
     }
 
     @Override
     public Client getClientByUserName(String userName) {
         Client client = null;
-        for (Long key : clientsOfBank.keySet()) {
-            if (clientsOfBank.get(key).getUserName().equals(userName)){
-                client = clientsOfBank.get(key);
+        for (Client client1 : clientsOfBank.values()) {
+            if (client1.getUserName().equals(userName)){
+                client = client1;
                 break;
             }
         }

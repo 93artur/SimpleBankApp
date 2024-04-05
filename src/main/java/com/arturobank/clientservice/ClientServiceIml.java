@@ -1,7 +1,7 @@
 package com.arturobank.clientservice;
 
 import com.arturobank.clientservice.model.Client;
-import com.arturobank.datebase.ClientBaseImpl;
+import com.arturobank.repository.ClientBaseImpl;
 
 public class ClientServiceIml implements ClientService {
     private ClientBaseImpl clientBase = new ClientBaseImpl();

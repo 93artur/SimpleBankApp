@@ -1,4 +1,4 @@
-package com.arturobank.viewlayer;
+package com.arturobank.view;
 
 import com.arturobank.clientservice.ClientServiceIml;
 import com.arturobank.clientservice.model.Client;

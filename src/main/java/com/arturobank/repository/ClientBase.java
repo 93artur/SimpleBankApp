@@ -1,4 +1,4 @@
-package com.arturobank.datebase;
+package com.arturobank.repository;
 
 import com.arturobank.clientservice.model.Client;
 

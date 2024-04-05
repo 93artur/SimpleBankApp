@@ -1,7 +1,7 @@
 package com.arturobank;
 
 import com.arturobank.clientservice.model.Client;
-import com.arturobank.viewlayer.ConsoleControllerImp;
+import com.arturobank.view.ConsoleControllerImp;
 
 public class ArturoBank {
     public static void main(String[] args) {
